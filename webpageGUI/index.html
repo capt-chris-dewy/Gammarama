@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Python WebSocket Bridge</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; background-color: #f8f9fa; }
+        .card { background: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        button { background-color: #0066cc; color: white; border: none; padding: 0.6rem 1.2rem; font-size: 1rem; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0052a3; }
+        .metric { font-weight: bold; color: #2e7d32; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Explicit Function Trigger</h2>
+        <button onclick="triggerPythonGreet()">Click Me to Run Python Function</button>
+        <p>Response: <span id="greeting-output" class="metric">Waiting for click...</span></p>
+    </div>
+	
+	<div class="card">
+        <h2>Mystery EXE Launcher </h2>
+        <button onclick="triggerBENDER()">Click Me to Run Python Function</button>
+        <p>Response: <span id="bender-out" class="metric">Waiting for click...</span></p>
+    </div>
+	
+	<div class="card">
+		<h2> Manual Command-Override to PLC</h2>
+		<input type="text" id="command-override" placeholder="Type a command based on datasheet" style="padding: 8px; width: 60%; margin-right: 8px;" />
+		<button onclick="triggerOverride()">Send</button>
+		<p>Response: <span id="override-response" class="metric">Waiting for PLC response...</span></p>
+	</div>
+
+	<div class="card">
+		<h2>Connect to PLC (Serial)</h2>
+		<button onclick="triggerSerialScan()">Scan for Serial Ports</button>
+		
+		<select id = "port-dropdown"> Select Serial Port...<option value = ""> </option> </select>
+		
+		<button onclick="triggerSerialConnect()">Connect</button>
+		<p>Response: <span id="connect-status" class="metric">Waiting for connection status...</span></p>
+	</div>
+
+    <script src = "GUI.js"> </script>
+</body>
+</html>
