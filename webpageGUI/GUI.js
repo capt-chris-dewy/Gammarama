@@ -15,7 +15,9 @@ socket.onmessage = (event) => {
 		}
 	}
 };
-// Dispatch payload on button click
+
+/*MISCELLANEOUS: SILLY FUNCTIONS*/
+
 function triggerPythonGreet() {
 	const payload = {
 		action: 'greet',
@@ -31,6 +33,8 @@ function triggerBENDER() {
 	};
 	socket.send(JSON.stringify(payload));
 }
+
+/*MISCELLANEOUS: COMMAND OVERRIDE*/
 
 function triggerOverride() {
 	// 1. Get the value from the text input field
@@ -51,6 +55,7 @@ function triggerOverride() {
 	socket.send(JSON.stringify(payload));
 }
 
+/*INITIALIZATION: COM PORT SCAN + SELECTION UTILITY*/
 function triggerSerialScan() {
 	const payload = {
 		action: 'portScan',
@@ -94,6 +99,7 @@ function triggerSerialConnect() {
 	socket.send(JSON.stringify(payload));
 }
 
+/*INITIALIZATION: MOTOR / PLC START-UP*/
 function triggerMotorInit() {
 	const payload = {
 		action: 'initMotor',
@@ -103,6 +109,7 @@ function triggerMotorInit() {
 	socket.send(JSON.stringify(payload));
 }
 
+/*BASIC MOVEMENT FUNCTIONS: PREVIOUS/NEXT/GO-TO-ARBITRARY-POSITION*/
 function triggerPrevious() {
 	const payload = {
 		action: 'prevPos',

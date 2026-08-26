@@ -36,92 +36,73 @@ async def websocket_handler(websocket):
         async for message in websocket:
             data = json.loads(message)
             action = data.get("action")
-
-            # Match incoming UI trigger requests
-            if action == "greet":
-                target_id = data.get("target")
-                response = execute_greet_handler(target_id)
-                await websocket.send(json.dumps(response))
-                
-            if action == "launchBENDER":
-                #the r prefacing the string below is necessary so that Python acknowledges the "\" in the file
-                #as not representing an escape character preface
-                
-                #note also: browsers don't like accessing files from absolute paths stemming from your C drive
-                #but don't mind relative paths from the working directory of this python server file, say
-                target_id = data.get("target")
-                message = EXE_SPAWNER.gif_handler(r"media\bender.gif")
-                response = {"type":"ui_update", "target_id": target_id, "text": message}
-                await websocket.send(json.dumps(response))
+            target_id = data.get("target")
             
-            if action == "portScan":
-                target_id = data.get("target")
-                port_list = PLC_HANDLER.list_COM_ports()
-                response = {"type":"get_values_for_handler", "target_id": target_id, "text": port_list}
-                await websocket.send(json.dumps(response))
-            
-            if action == "initSerial":
-                target_id = data.get("target")
-                com_port = data.get("COMSelected")
-                result = PLC_HANDLER.initializeSerialComms(com_port)
-                message = -1;
+            match action:
+                case "portScan":
+                    port_list = PLC_HANDLER.list_COM_ports()
+                    response = {"type":"get_values_for_handler", "target_id": target_id, "text": port_list}
+                case "initSerial":
+                    com_port = data.get("COMSelected")
+                    result = PLC_HANDLER.initializeSerialComms(com_port)
+                    message = -1;
                 
-                #equivalent of a switch statement:
-                match result:
-                    case 0:
-                        message = "SerialException: Device not found"
-                    case 1:
-                        message = "Serial connection established, system online"
-                        SYSTEM_OPERATIONAL = 1
-                    case 2:
-                        message = "Error: PLC returned invalid positon < 0 or > 12"
+                    #equivalent of a switch statement:
+                    match result:
+                        case 0:
+                            message = "SerialException: Device not found"
+                        case 1:
+                            message = "Serial connection established, system online"
+                            SYSTEM_OPERATIONAL = 1
+                        case 2:
+                            message = "Error: PLC returned invalid positon < 0 or > 12"
                     
-                response = {"type":"ui_update", "target_id": target_id, "text": message}
-                await websocket.send(json.dumps(response))
+                    response = {"type":"ui_update", "target_id": target_id, "text": message}
+                    
+                case "initMotor":
+                    result = PLC_HANDLER.initializeMotor()
+                    response = {"type":"ui_update", "target_id": target_id, "text": result}
+                case "nextPos":
+                    old_position = PLC_HANDLER.readPosition()
+                    PREVIOUS_POSITION = old_position
+                
+                    result = PLC_HANDLER.indexPos()
+                    response = {"type":"ui_update", "target_id": target_id, "text": result}
+                    
+                case "goToPos":
+                    old_position = PLC_HANDLER.readPosition()
+                    PREVIOUS_POSITION = old_position
+                
+                    new_position = data.get("new_position")
+                    result = PLC_HANDLER.goToPosition(new_position)
+                    response = {"type":"ui_update", "target_id": target_id, "text": result}
+                    
+                case "prevPos":
+                    prev_position = PREVIOUS_POSITION
+                
+                    old_position = PLC_HANDLER.readPosition()
+                    PREVIOUS_POSITION = old_position
+                
+                    result = PLC_HANDLER.goToPosition(prev_position)
+                    response = {"type":"ui_update", "target_id": target_id, "text": result}
+                    
+                case "commandOverride":
+                    cmd = data.get("commandToSend")
+                    plc_response = PLC_HANDLER.command_override(cmd)
+                    response = {"type":"ui_update", "target_id": target_id, "text": plc_response}
+                    
+                case "greet":
+                    response = execute_greet_handler(target_id)
+                case "launchBENDER":
+                    #the r prefacing the string below is necessary so that Python acknowledges the "\" in the file
+                    #as not representing an escape character preface
+                
+                    #note also: browsers don't seem to like accessing files from absolute paths stemming from your C drive
+                    #but don't mind relative paths from the working directory of this python server file, say
+                    message = EXE_SPAWNER.gif_handler(r"media\bender.gif")
+                    response = {"type":"ui_update", "target_id": target_id, "text": message}
             
-            if action == "initMotor":
-                target_id = data.get("target")
-                result = PLC_HANDLER.initializeMotor()
-                response = {"type":"ui_update", "target_id": target_id, "text": result}
-                await websocket.send(json.dumps(response))
-            
-            if action == "nextPos":
-                old_position = PLC_HANDLER.readPosition()
-                PREVIOUS_POSITION = old_position
-                
-                target_id = data.get("target")
-                result = PLC_HANDLER.indexPos()
-                response = {"type":"ui_update", "target_id": target_id, "text": result}
-                await websocket.send(json.dumps(response))
-                
-            if action == "goToPos":
-                old_position = PLC_HANDLER.readPosition()
-                PREVIOUS_POSITION = old_position
-                
-                new_position = data.get("new_position")
-                target_id = data.get("target")
-                result = PLC_HANDLER.goToPosition(new_position)
-                response = {"type":"ui_update", "target_id": target_id, "text": result}
-                await websocket.send(json.dumps(response))
-            
-            if action == "prevPos":
-                prev_position = PREVIOUS_POSITION
-                
-                old_position = PLC_HANDLER.readPosition()
-                PREVIOUS_POSITION = old_position
-                
-                target_id = data.get("target")
-                result = PLC_HANDLER.goToPosition(prev_position)
-                response = {"type":"ui_update", "target_id": target_id, "text": result}
-                await websocket.send(json.dumps(response))
-                
-            if action == "commandOverride":
-                target_id = data.get("target")
-                cmd = data.get("commandToSend")
-                plc_response = PLC_HANDLER.command_override(cmd)
-                response = {"type":"ui_update", "target_id": target_id, "text": plc_response}
-                await websocket.send(json.dumps(response))
-            
+            await websocket.send(json.dumps(response))
 
     except websockets.ConnectionClosedError:
         pass

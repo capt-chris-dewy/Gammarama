@@ -10,6 +10,8 @@ class PLC():
         self.name = name
         self.serialObj = -1;
     
+    """INITIALIZATION STEPS / FUNCTIONS"""
+    
     def initializeSerialComms(self, com_selected):
         #initialize PLC Serial Object for communications
         try:
@@ -35,6 +37,8 @@ class PLC():
         trimmed1 = self.trim_response(response1)
         return trimmed1
     
+    """BASIC MOVEMENT FUNCTIONS"""
+    
     def indexPos(self):
         cmd = "ST iHMI_INDEX_PB 1"
         response1 = self.send_command(cmd)
@@ -52,12 +56,16 @@ class PLC():
         
         return trimmed1
     
+    """SENSOR READING FUNCTIONS"""
+    
     def readPosition(self):
         cmd = "RD iCURRENT_POSITION"
         response1 = self.send_command(cmd)
         current_pos = self.isolateRead(response1)
         current_pos_as_int = int(current_pos)
         return current_pos_as_int
+    
+    """MISCELLANEOUS -- CUSTOM COMMAND / COMMAND OVERRIDE"""
     
     def command_override(self, user_input):
         prefix = user_input[0:2]
@@ -69,7 +77,8 @@ class PLC():
         else:
             print("Invalid prefix -- command must start with 'ST' or 'RD' (write/read)")
             return "Error: no response due to invalid command"
-         
+    
+    """READ AND WRITE COMMAND UTILITY FUNCTIONS"""
      
     def send_command(self, command):
         if command[-2:] == "\r":
