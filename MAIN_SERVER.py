@@ -15,6 +15,11 @@ CONNECTED_CLIENTS = set()
 
 EXE_SPAWNER = SPAWN_EXE.EXESpawner("Master")
 PLC_HANDLER = COMMS.PLC("UML Sample Changer")
+
+#global variables
+SYSTEM_OPERATIONAL = 0 #now witness the power of this fully armed and operational battle station
+PREVIOUS_POSITION = 0 #for command to go to previous
+
 # --- Python Handler Functions ---
 def execute_greet_handler(target_id: str) -> dict:
     """Standard Python logic executed upon UI request."""
@@ -58,16 +63,65 @@ async def websocket_handler(websocket):
             if action == "initSerial":
                 target_id = data.get("target")
                 com_port = data.get("COMSelected")
-                message = PLC_HANDLER.initializeSerialComms(com_port);
+                result = PLC_HANDLER.initializeSerialComms(com_port)
+                message = -1;
+                
+                #equivalent of a switch statement:
+                match result:
+                    case 0:
+                        message = "SerialException: Device not found"
+                    case 1:
+                        message = "Serial connection established, system online"
+                        SYSTEM_OPERATIONAL = 1
+                    case 2:
+                        message = "Error: PLC returned invalid positon < 0 or > 12"
+                    
                 response = {"type":"ui_update", "target_id": target_id, "text": message}
                 await websocket.send(json.dumps(response))
             
+            if action == "initMotor":
+                target_id = data.get("target")
+                result = PLC_HANDLER.initializeMotor()
+                response = {"type":"ui_update", "target_id": target_id, "text": result}
+                await websocket.send(json.dumps(response))
+            
+            if action == "nextPos":
+                old_position = PLC_HANDLER.readPosition()
+                PREVIOUS_POSITION = old_position
+                
+                target_id = data.get("target")
+                result = PLC_HANDLER.indexPos()
+                response = {"type":"ui_update", "target_id": target_id, "text": result}
+                await websocket.send(json.dumps(response))
+                
+            if action == "goToPos":
+                old_position = PLC_HANDLER.readPosition()
+                PREVIOUS_POSITION = old_position
+                
+                new_position = data.get("new_position")
+                target_id = data.get("target")
+                result = PLC_HANDLER.goToPosition(new_position)
+                response = {"type":"ui_update", "target_id": target_id, "text": result}
+                await websocket.send(json.dumps(response))
+            
+            if action == "prevPos":
+                prev_position = PREVIOUS_POSITION
+                
+                old_position = PLC_HANDLER.readPosition()
+                PREVIOUS_POSITION = old_position
+                
+                target_id = data.get("target")
+                result = PLC_HANDLER.goToPosition(prev_position)
+                response = {"type":"ui_update", "target_id": target_id, "text": result}
+                await websocket.send(json.dumps(response))
+                
             if action == "commandOverride":
                 target_id = data.get("target")
                 cmd = data.get("commandToSend")
                 plc_response = PLC_HANDLER.command_override(cmd)
                 response = {"type":"ui_update", "target_id": target_id, "text": plc_response}
                 await websocket.send(json.dumps(response))
+            
 
     except websockets.ConnectionClosedError:
         pass

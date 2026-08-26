@@ -11,29 +11,54 @@ class PLC():
         self.serialObj = -1;
     
     def initializeSerialComms(self, com_selected):
+        #initialize PLC Serial Object for communications
         try:
             ser = serial.Serial(port=com_selected, baudrate=9600, timeout=1)
             self.serialObj = ser
-            return "Serial connection successfully established!"
+            #verify proper response from PLC to generic command (establish two-way comms is working)
+            response1 = self.send_command("RD iCURRENT_POSITION")
+            position1 = self.isolateRead(response1)
+            position1_asint = int(position1)
+        
+            if position1_asint >= 0 and position1_asint <= 12:
+                return 1 #system is operational, allow full operation
+            else:
+                return 2
+                
         except serial.SerialException:
-            return "SerialException: Device not found"
+            return 0 
     
     def initializeMotor(self):
-        print("Initializing to Position 1")
-        #pseudo-code
-        #check current position, verify that it is not corrupt
-        #response1 = send_command("RD iCURRENT_POSITION")
-        #position1 = trim_response(response_1)
-        #if position1 >= 0 and position1 <= 12:
-        #   print("Valid position, initializing motor")
-        #   response2 = send_command("ST iHMI_INITIALIZE_PB 1")
-        #   if response2 == "ST iHMI_INITIALIZE_PB 1":
-        #       print("Initialize command sent")
-        #   else:
-        #       print("Invalid initialization response from PLC")
-        #else:
-        #   print("Invalid position at start-up in PLC code, pos = " + str(position1))
-     
+        print("Attempting initialization")
+        cmd = "ST iHMI_INITIALIZE_PB 1"
+        response1 = self.send_command(cmd)
+        trimmed1 = self.trim_response(response1)
+        return trimmed1
+    
+    def indexPos(self):
+        cmd = "ST iHMI_INDEX_PB 1"
+        response1 = self.send_command(cmd)
+        trimmed1 = self.trim_response(response1)
+        return trimmed1
+        
+    def goToPosition(self, new_pos):
+        cmd1 = "ST iHMI_NEW_POSITON " + str(new_pos)
+        response1 = self.send_command(cmd1)
+        trimmed1 = self.trim_response(response1)
+        
+        cmd2 = "ST iHMI_NEW_POSITION_PB 1"
+        response2 = self.send_command(cmd2)
+        trimmed2 = self.trim_response(response2)
+        
+        return trimmed1
+    
+    def readPosition(self):
+        cmd = "RD iCURRENT_POSITION"
+        response1 = self.send_command(cmd)
+        current_pos = self.isolateRead(response1)
+        current_pos_as_int = int(current_pos)
+        return current_pos_as_int
+    
     def command_override(self, user_input):
         prefix = user_input[0:2]
         if prefix == "ST" or prefix == "RD":
@@ -51,14 +76,23 @@ class PLC():
             pass
         else:
            command_cr = command + '\r'
-            
+        
+        if self.serialObj == -1:
+            print("Error: serial connection was never initialized prior to \"send_command\", please review Python errors in console")
         command_ascii = command_cr.encode('ascii')
-        serial_connection.write(command_ascii)
-        response = serial_connection.read_until(b'\r')
+        self.serialObj.write(command_ascii)
+        response = self.serialObj.read_until(b'\r')
         return response
          
     def trim_response(self, response):
-        return response.decode('ascii').strip()
+        response_nix_cr = response.decode('ascii').strip() #decode to ascii, get rid of '\r' carriage return / "cr"
+        return response_nix_cr
+    
+    def isolateRead(self, response):
+        trimmed_response = self.trim_response(response)
+        starting_index = trimmed_response.rfind(' ') + 1 #find the last index containing a space to isolate returned value from read command, add 1
+        return trimmed_response[starting_index:] 
+        
 
     #function for identifying + listing all comm ports (appears to work for windows)
     #intended for use in a dropdown menu in main web-based GUI

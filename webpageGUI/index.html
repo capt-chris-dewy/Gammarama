@@ -41,6 +41,21 @@
 		<button onclick="triggerSerialConnect()">Connect</button>
 		<p>Response: <span id="connect-status" class="metric">Waiting for connection status...</span></p>
 	</div>
+	
+	<div class="card">
+        <h2>Initialize Motor</h2>
+        <button onclick="triggerMotorInit()">Init. Motor</button>
+        <p>Response: <span id="motor-init-result" class="metric">Waiting for click...</span></p>
+    </div>
+	
+	<div class="card">
+		<h2> Simple Movement with PLC </h2>
+		<button onclick="triggerPrevious()">PREV</button>
+		<input type="text" id="go-to-pos-input" placeholder="Enter a specific sample position..." style="padding: 8px; width: 60%; margin-right: 8px;" />
+		<button onclick="triggerGoToPos()">GO </button>
+		<p>Response: <span id="new-pos" class="metric">Waiting for PLC response...</span></p>
+		<button onclick="triggerNext()">NEXT</button>
+	</div>
 
     <script src = "GUI.js"> </script>
 </body>

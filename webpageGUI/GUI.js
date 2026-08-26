@@ -93,3 +93,43 @@ function triggerSerialConnect() {
 	
 	socket.send(JSON.stringify(payload));
 }
+
+function triggerMotorInit() {
+	const payload = {
+		action: 'initMotor',
+		target: 'motor-init-result'
+	};
+	
+	socket.send(JSON.stringify(payload));
+}
+
+function triggerPrevious() {
+	const payload = {
+		action: 'prevPos',
+		target: 'new-pos'
+	};
+	
+	socket.send(JSON.stringify(payload));
+}
+
+function triggerNext() {
+	const payload = {
+		action: 'nextPos',
+		target: 'new-pos'
+	};
+	
+	socket.send(JSON.stringify(payload));
+}
+
+function triggerGoToPos() {
+	const new_position_entry = document.getElementById('go-to-pos-input');
+	const new_pos_value = new_position_entry.value;
+	
+	const payload = {
+		new_position: new_pos_value,
+		action: 'goToPos',
+		target: 'new-pos'
+	};
+	
+	socket.send(JSON.stringify(payload));
+}
