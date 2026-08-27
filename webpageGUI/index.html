@@ -2,61 +2,207 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Python WebSocket Bridge</title>
+    <title>Gammarama</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 2rem; background-color: #f8f9fa; }
-        .card { background: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        button { background-color: #0066cc; color: white; border: none; padding: 0.6rem 1.2rem; font-size: 1rem; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #0052a3; }
-        .metric { font-weight: bold; color: #2e7d32; }
+		@font-face {
+			font-family: 'FreePixel'; /*courtesy sadgrlonline*/
+			src: url('FreePixel.ttf') format('truetype');
+			font-weight: normal;
+			font-style: normal;
+		}
+		body {
+			font-family: 'FreePixel';
+			background-color: rgb(250, 200, 206);
+		}
+		
+		/* generic stuff */
+		
+		.generic-button {
+			background-color: white;
+			color: blue;
+		}
+		
+		/* specific organizational divs / important one-off UI components */
+		
+		#titular {text-align: center;}
+		
+		.safety {text-align: center;}
+		
+		#emergency-stop {
+			background-color: rgb(255, 0, 0);
+			color: white;
+		}
+		
+		#emergency-unstop {
+			background-color: rgb(0, 255, 0);
+			color: white;
+		}
+		
+		.nonsafety-ui {
+			text-align: center;
+			display: grid;
+			grid-template-columns: auto auto;
+			grid-gap: 10px;
+		}
+		
+		#communications {
+			grid-column: 1;
+			grid-row: 1;
+		}
+		
+		#plc-info {
+			grid-column: 2;
+			grid-row: 1;
+		}
+		
+		#sensor-array{
+			display: flex;
+			justify-content: center;
+		}
+		.sensor-label{
+			padding: 0.33rem 0.33rem;
+			font-size: 1.2rem;
+			font-weight: bold;
+		}
+		.sensor-value{
+			padding: 0.33rem 0.33rem;
+			font-size: 1.0rem;
+			background-color: white;
+			color: blue;
+		}
+		
+		#position-label {
+			padding: 0.33rem 0.33rem;
+			font-size: 1.2rem;
+			font-weight: bold;
+		}
+		
+		#position-value {
+			padding: 0.33rem 0.33rem;
+			font-size: 1.0rem;
+			background-color: white;
+			color: blue;
+		}
+		
+		#motion-section { text-align: center; }
+		
+		.selectable-mode { text-align: center; }
+		
+		#manual-mode {
+			text-align: center;
+			display: grid;
+			grid-template-columns: auto;
+			grid-gap: 10px;
+		}
+		
+		#manual-label {
+			grid-column: 1;
+			grid-row: 1;
+		}
+		
+		#manual-motion {
+			grid-column: 1;
+			grid-row: 2;
+		}
+		
+		#manual-acquisition {
+			grid-column: 1;
+			grid-row: 3;
+		}
+		
     </style>
 </head>
 <body>
-
-    <div class="card">
-        <h2>Explicit Function Trigger</h2>
-        <button onclick="triggerPythonGreet()">Click Me to Run Python Function</button>
-        <p>Response: <span id="greeting-output" class="metric">Waiting for click...</span></p>
-    </div>
-	
-	<div class="card">
-        <h2>Mystery EXE Launcher </h2>
-        <button onclick="triggerBENDER()">Click Me to Run Python Function</button>
-        <p>Response: <span id="bender-out" class="metric">Waiting for click...</span></p>
-    </div>
-	
-	<div class="card">
-		<h2> Manual Command-Override to PLC</h2>
-		<input type="text" id="command-override" placeholder="Type a command based on datasheet" style="padding: 8px; width: 60%; margin-right: 8px;" />
-		<button onclick="triggerOverride()">Send</button>
-		<p>Response: <span id="override-response" class="metric">Waiting for PLC response...</span></p>
+	<div id = titular>
+		<h1> Gammarama </h1>
+		<h2> INAA Control System </h2>
 	</div>
-
-	<div class="card">
-		<h2>Connect to PLC (Serial)</h2>
-		<button onclick="triggerSerialScan()">Scan for Serial Ports</button>
+	
+	<br />
+	
+	<div class = safety>
+		<h2> Safety/Emergency Stop </h2>
 		
-		<select id = "port-dropdown"> Select Serial Port...<option value = ""> </option> </select>
+		<button id ="emergency-stop" onclick=""> STOP </button>
+		<button id ="emergency-unstop" onclick=""> UN-STOP </button>
+	</div>
+	
+	
+	<div class = nonsafety-ui> 
+		<div id = communications>
+			<h2> COMMUNICATIONS </h2>
+			<button class ="generic-button" onclick=""> Scan Ports </button>
+			<select id = "port-dropdown"> 
+				<option value = "" disabled selected hidden> Select a Serial Port... </option> 
+			</select>
+			<button class ="generic-button" onclick=""> Connect </button>
+		</div>
 		
-		<button onclick="triggerSerialConnect()">Connect</button>
-		<p>Response: <span id="connect-status" class="metric">Waiting for connection status...</span></p>
+		<div id = plc-info>
+			<h2> PLC SENSORS </h2>
+			
+			<div id = "sensor-array"> 
+				<div class="sensor-box"><span class = "sensor-label">B</span><span id="sensorB-value" class="sensor-value">--</span></div>
+				<div class="sensor-box"><span class = "sensor-label">C</span><span id="sensorC-value" class="sensor-value">--</span></div>
+				<div class="sensor-box"><span class = "sensor-label">D</span><span id="sensorD-value" class="sensor-value">--</span></div>
+				<div class="sensor-box"><span class = "sensor-label">E</span><span id="sensorE-value" class="sensor-value">--</span></div>
+				<div class="sensor-box"><span class = "sensor-label">F</span><span id="sensorF-value" class="sensor-value">--</span></div>
+				<div class="sensor-box"><span class = "sensor-label">H</span><span id="sensorG-value" class="sensor-value">--</span></div>
+			</div>
+			
+			<br /> <br />
+			
+			<span id = "position-label">Current Position: </span><span id="position-value">--</span></div>
+		</div>
 	</div>
 	
-	<div class="card">
-        <h2>Initialize Motor</h2>
-        <button onclick="triggerMotorInit()">Init. Motor</button>
-        <p>Response: <span id="motor-init-result" class="metric">Waiting for click...</span></p>
-    </div>
 	
-	<div class="card">
-		<h2> Simple Movement with PLC </h2>
-		<button onclick="triggerPrevious()">PREV</button>
-		<input type="text" id="go-to-pos-input" placeholder="Enter a specific sample position..." style="padding: 8px; width: 60%; margin-right: 8px;" />
-		<button onclick="triggerGoToPos()">GO </button>
-		<p>Response: <span id="new-pos" class="metric">Waiting for PLC response...</span></p>
-		<button onclick="triggerNext()">NEXT</button>
+	<div id = "motion-section">
+		<h2> Select Operation Mode: </h2>
+		<br/>
+		
+		<input type="radio" name="operation-mode" value="Manual" checked onclick ="showContent('manual-mode')">
+		<label for="manual-button">Manual</label>
+		
+		<input type="radio" name="operation-mode" value="Autopilot - Timer" onclick ="showContent('auto-timer')">
+		<label for="autopilot-timer-button">Autopilot - Timer</label>
+		
+		<input type="radio" name="operation-mode" value="Autopilot - Counts" onclick ="showContent('auto-counts')">
+		<label for="autopilot-counts-button">Autopilot - Counts</label>
+		
 	</div>
-
-    <script src = "GUI.js"> </script>
+	
+	<div class = "selectable-mode" id = "manual-mode">
+		<h3> Manual Mode </h3>
+		
+		<div id = "manual-motion">
+			<button class = "generic-button" onclick="">PREV</button>
+			<button class = "generic-button" onclick="">NEXT</button>
+			<span>New Position: </span>
+			<input type="text" id="go-to-pos-input" placeholder="1" style="padding: 8px; width: 1rem; margin-right: 8px;" />
+			<button class = "generic-button" onclick="">GO </button>
+			<!-- <p>Response: <span id="new-pos" class="metric">Waiting for PLC response...</span></p> -->
+		</div>
+		
+		<div id = "manual-acquisition">
+			<span>Genie 2K Data Collection</span>
+			<button class = "generic-button" onclick="">START Acquisition</button>
+			<button class = "generic-button" onclick="">STOP Acquisition</button>
+		</div>
+		
+	</div>
+	
+	<div class = "selectable-mode" id = "auto-timer" style="display: none;">
+		<h3> Autopilot - Timer </h3>
+	</div>
+	
+	<div class = "selectable-mode" id = "auto-counts" style="display: none;">
+		<h3> Autopilot-Counts </h3>
+	</div>
+	
+	<br /> <br /> <br />
+	
+	<img width="753" height="26" src="KilroyZIEGLER.gif" align="left" v:shapes="Picture_x0020_2">
+    <script src = "experiment.js"> </script>
 </body>
 </html>
