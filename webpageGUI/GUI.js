@@ -14,6 +14,21 @@ socket.onmessage = (event) => {
 			updateDropdown(data.text)
 		}
 	}
+	
+	if (data.type === 'sensor_poll') {
+		posSensors = data.posSense;
+		motorFault = data.motorFault;
+		position_read = data.pos;
+		
+		document.getElementById("sensorB-value").innerText = posSensors[0];
+		document.getElementById("sensorC-value").innerText = posSensors[1];
+		document.getElementById("sensorD-value").innerText = posSensors[2];
+		document.getElementById("sensorE-value").innerText = posSensors[3];
+		document.getElementById("sensorF-value").innerText = posSensors[4];
+		document.getElementById("sensorH-value").innerText = posSensors[5];
+		
+		document.getElementById("position-value").innerText = position_read;
+	}
 };
 
 /*WEBPAGE FUNCTIONALITY: SHOW/HIDE UI OPTIONS FOR MANUAL AND AUTOPILOT MODES*/

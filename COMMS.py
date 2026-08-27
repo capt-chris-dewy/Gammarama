@@ -64,7 +64,24 @@ class PLC():
         current_pos = self.isolateRead(response1)
         current_pos_as_int = int(current_pos)
         return current_pos_as_int
-    
+        
+    def readPosSensors(self):
+        cmds = ["RD IPOSITION_B_BIT_0", "RD IPOSITION_C_BIT_1", "RD IPOSITION_D_BIT_2",
+                "RD IPOSITION_E_BIT_3", "RD IPOSITION_F_BIT_4", "RD IPOSITION_H_STOP"]
+        
+        pos_sensor_bits = []
+        
+        for cmd in cmds:
+            response = self.send_command(cmd)
+            bit_response = self.isolateRead(response)
+            bit_int = int(bit_response)
+            pos_sensor_bits.append(bit_int)
+        
+        return pos_sensor_bits
+        
+    def readMotorFault(self):
+        response = self.send_command("RD IMOTOR_FAULT")
+        return int(self.isolateRead(response))
     """MISCELLANEOUS -- CUSTOM COMMAND / COMMAND OVERRIDE"""
     
     def command_override(self, user_input):
