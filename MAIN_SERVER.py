@@ -118,6 +118,18 @@ async def websocket_handler(websocket):
                     async with PLC_LOCK:
                         result = PLC_HANDLER.goToPosition(prev_position)
                     response = {"type":"ui_update", "target_id": target_id, "text": result}
+                
+                case "launch_genie":
+                    EXE_SPAWNER.launch_genie2000()
+                    response = {"nada":""}
+                
+                case "manual_start_mca":
+                    EXE_SPAWNER.manual_start_acquisition()
+                    response = {"nada":""}
+                    
+                case "manual_stop_mca":
+                    EXE_SPAWNER.manual_stop_acquisition()
+                    response = {"nada":""}
                     
                 case "commandOverride":
                     cmd = data.get("commandToSend")

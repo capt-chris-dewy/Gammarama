@@ -164,3 +164,28 @@ function triggerGoToPos() {
 	
 	socket.send(JSON.stringify(payload));
 }
+
+function triggerGenieLaunch() {
+	const payload = {
+		action: 'launch_genie'
+	};
+	
+	socket.send(JSON.stringify(payload));
+}
+
+function trigger_MANUAL_START_MCA() {
+	const payload = {
+		action: 'manual_start_mca'
+	};
+	
+	socket.send(JSON.stringify(payload));
+}
+
+function trigger_MANUAL_STOP_MCA() {
+	const payload = {
+		action: 'manual_stop_mca'
+	};
+	
+	socket.send(JSON.stringify(payload));
+}
+

@@ -130,11 +130,13 @@
 	
 	<div class = nonsafety-ui> 
 		<div id = communications>
-			<h2> COMMUNICATIONS </h2>
+			<h2> STARTUP & COMMUNICATIONS </h2>
 			<button class ="generic-button" onclick="triggerSerialScan()"> Scan Ports </button>
 			<select id = "port-dropdown"> Select Serial Port...<option value = ""> </option> </select>
 			<button class ="generic-button" onclick="triggerSerialConnect()"> Connect </button>
 			<p>Response: <span id="connect-status" class="metric">Waiting for connection status...</span></p>
+			
+			<button class ="generic-button" onclick="triggerGenieLaunch()">Launch GENIE2000 + Open Detector: GEOLOGY</button>
 		</div>
 		
 		<div id = plc-info>
@@ -185,8 +187,8 @@
 		
 		<div id = "manual-acquisition">
 			<span>Genie 2K Gamma Collection</span>
-			<button class = "generic-button" onclick="">START Acquisition</button>
-			<button class = "generic-button" onclick="">STOP Acquisition</button>
+			<button class = "generic-button" onclick="trigger_MANUAL_START_MCA()">START Acquisition</button>
+			<button class = "generic-button" onclick="trigger_MANUAL_STOP_MCA()">STOP Acquisition</button>
 		</div>
 		
 	</div>
