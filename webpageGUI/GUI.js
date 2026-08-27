@@ -16,6 +16,15 @@ socket.onmessage = (event) => {
 	}
 };
 
+/*WEBPAGE FUNCTIONALITY: SHOW/HIDE UI OPTIONS FOR MANUAL AND AUTOPILOT MODES*/
+function showContent(id) {
+	// Hide all content boxes
+	document.querySelectorAll('.selectable-mode').forEach(el => {
+		el.style.display = 'none';
+	});
+	// Show the selected box
+	document.getElementById(id).style.display = 'block';
+}
 /*MISCELLANEOUS: SILLY FUNCTIONS*/
 
 function triggerPythonGreet() {
