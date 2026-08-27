@@ -19,7 +19,7 @@ PLC_HANDLER = COMMS.PLC("UML Sample Changer")
 #global variables
 SYSTEM_OPERATIONAL = 0 #now witness the power of this fully armed and operational battle station
 PREVIOUS_POSITION = 0 #for command to go to previous
-SENSOR_POLL_INTERVAL = 0.5 #seconds
+SENSOR_POLL_INTERVAL = 0.2 #seconds
 
 #asyncio lock to prevent the UI querying the PLC at the same time as regular sensor polling
 PLC_LOCK = asyncio.Lock()
@@ -74,16 +74,21 @@ async def websocket_handler(websocket):
                     message = -1;
                 
                     #equivalent of a switch statement:
+                    status_color = -1;
                     match result:
+                        
                         case 0:
                             message = "SerialException: Device not found"
+                            status_color = {"r": 255, "g": 0, "b": 0}
                         case 1:
-                            message = "Serial connection established, system online"
+                            message = "SYSTEM ONLINE"
                             SYSTEM_OPERATIONAL = 1
+                            status_color = {"r": 0, "g": 140, "b": 0}
                         case 2:
                             message = "Error: PLC returned invalid positon < 0 or > 12"
+                            status_color = {"r": 255, "g": 0, "b": 0}
                     
-                    response = {"type":"ui_update", "target_id": target_id, "text": message}
+                    response = {"type":"ui_update", "target_id": target_id, "text": message, "status_rgb": status_color}
                     
                 case "initMotor":
                     async with PLC_LOCK:

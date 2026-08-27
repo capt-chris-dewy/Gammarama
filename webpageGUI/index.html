@@ -15,9 +15,27 @@
 			background-color: rgb(250, 200, 206);
 		}
 		
+		h1 {
+			font-size: 3rem;
+		}
+		h2 {
+			font-size: 2rem;
+		}
+		h3 {
+			font-size: 1.5rem;
+		}
+		
+		p, span {
+			font-size: 1.2rem;
+		}
+		
 		/* generic stuff */
 		
 		.generic-button {
+			width: fit-content;
+			margin: 0.5rem 0.5rem;
+			height: 2.5rem;
+			font-size: 1.2rem;
 			background-color: white;
 			color: blue;
 		}
@@ -26,22 +44,16 @@
 		
 		#titular {text-align: center;}
 		
-		.safety {text-align: center;}
-		
-		#emergency-stop {
-			background-color: rgb(255, 0, 0);
-			color: white;
-		}
-		
-		#emergency-unstop {
-			background-color: rgb(0, 255, 0);
-			color: white;
+		#connect-status {
+			font-weight: bold;
+			font-size: 1.33rem;
+			color: rgb(255, 0, 0);
 		}
 		
 		.nonsafety-ui {
 			text-align: center;
 			display: grid;
-			grid-template-columns: auto auto;
+			grid-template-columns: auto; /*re-insert 2nd auto here if wanting two-colum split: start-up, pos. sensors*/
 			grid-gap: 10px;
 		}
 		
@@ -50,9 +62,8 @@
 			grid-row: 1;
 		}
 		
-		#plc-info {
-			grid-column: 2;
-			grid-row: 1;
+		#port-dropdown {
+			font-size: 1.33rem;
 		}
 		
 		#sensor-array{
@@ -61,25 +72,25 @@
 		}
 		.sensor-label{
 			padding: 0.33rem 0.33rem;
-			font-size: 1.2rem;
+			font-size: 1.33rem;
 			font-weight: bold;
 		}
 		.sensor-value{
 			padding: 0.33rem 0.33rem;
-			font-size: 1.0rem;
+			font-size: 1.2rem;
 			background-color: white;
 			color: blue;
 		}
 		
 		#position-label {
 			padding: 0.33rem 0.33rem;
-			font-size: 1.2rem;
+			font-size: 1.33rem;
 			font-weight: bold;
 		}
 		
 		#position-value {
-			padding: 0.33rem 0.33rem;
-			font-size: 1.0rem;
+			padding: 0.4rem 0.6rem;
+			font-size: 1.5rem;
 			background-color: white;
 			color: blue;
 		}
@@ -87,118 +98,135 @@
 		#motion-section { text-align: center; }
 		
 		.selectable-mode { text-align: center; }
+		.mode-radio {font-size: 1.33rem;}
 		
-		#manual-mode {
+		#operation{
 			text-align: center;
 			display: grid;
-			grid-template-columns: auto;
+			grid-template-columns: auto auto;
 			grid-gap: 10px;
 		}
 		
-		#manual-label {
-			grid-column: 1;
-			grid-row: 1;
+		#emergency-stop {
+			width: 10rem;
+			height: 5rem;
+			font-size: 1.5rem;
+			background-color: rgb(255, 0, 0);
+			color: white;
 		}
 		
-		#manual-motion {
-			grid-column: 1;
-			grid-row: 2;
+		#emergency-unstop {
+			width: 10rem;
+			height: 5rem;
+			font-size: 1.5rem;
+			background-color: rgb(0, 140, 0);
+			color: white;
 		}
 		
-		#manual-acquisition {
-			grid-column: 1;
-			grid-row: 3;
+		#manual-mode {
+			text-align: left;
+			justify-self: center;
 		}
 		
     </style>
 </head>
 <body>
 	<div id = titular>
-		<h1> Gammarama </h1>
-		<h2> INAA Control System </h2>
+		<h1> INAA Sample Changer  </h1>
 	</div>
 	
 	<br />
 	
-	<div class = safety>
-		<h2> Safety/Emergency Stop </h2>
-		
-		<button id ="emergency-stop" onclick=""> STOP </button>
-		<button id ="emergency-unstop" onclick=""> UN-STOP </button>
-	</div>
-	
-	
 	<div class = nonsafety-ui> 
 		<div id = communications>
-			<h2> STARTUP & COMMUNICATIONS </h2>
+			<h2> SAMPLE CHANGER STARTUP </h2>
 			<button class ="generic-button" onclick="triggerSerialScan()"> Scan Ports </button>
-			<select id = "port-dropdown"> Select Serial Port...<option value = ""> </option> </select>
+			<select id = "port-dropdown"> <option value ="" disabled selected hidden> "Select Serial Port..." </option> </select>
 			<button class ="generic-button" onclick="triggerSerialConnect()"> Connect </button>
-			<p>Response: <span id="connect-status" class="metric">Waiting for connection status...</span></p>
+			<p style ="font-size: 1.33rem; font-weight: bold;">Status: <span id="connect-status" class="metric">Waiting...</span></p>
 			
-			<button class ="generic-button" onclick="triggerGenieLaunch()">Launch GENIE2000 + Open Detector: GEOLOGY</button>
-		</div>
-		
-		<div id = plc-info>
-			<h2> PLC SENSORS </h2>
-			
-			<div id = "sensor-array"> 
-				<div class="sensor-box"><span class = "sensor-label">B</span><span id="sensorB-value" class="sensor-value">--</span></div>
-				<div class="sensor-box"><span class = "sensor-label">C</span><span id="sensorC-value" class="sensor-value">--</span></div>
-				<div class="sensor-box"><span class = "sensor-label">D</span><span id="sensorD-value" class="sensor-value">--</span></div>
-				<div class="sensor-box"><span class = "sensor-label">E</span><span id="sensorE-value" class="sensor-value">--</span></div>
-				<div class="sensor-box"><span class = "sensor-label">F</span><span id="sensorF-value" class="sensor-value">--</span></div>
-				<div class="sensor-box"><span class = "sensor-label">H</span><span id="sensorH-value" class="sensor-value">--</span></div>
-			</div>
-			
-			<br /> <br />
-			
-			<span id = "position-label">Current Position: </span><span id="position-value">--</span></div>
+			<h2> GENIE SPECTROSCOPY STARTUP </h2>
+			<button class ="generic-button" onclick="triggerGenieLaunch()">Open Detector</button>
 		</div>
 	</div>
 	
 	
 	<div id = "motion-section">
 		<h2> Select Operation Mode: </h2>
-		<br/>
 		
 		<input type="radio" name="operation-mode" value="Manual" checked onclick ="showContent('manual-mode')">
-		<label for="manual-button">Manual</label>
+		<label class = "mode-radio" for="manual-button">Manual</label>
 		
 		<input type="radio" name="operation-mode" value="Autopilot - Timer" onclick ="showContent('auto-timer')">
-		<label for="autopilot-timer-button">Autopilot - Timer</label>
+		<label class = "mode-radio" for="autopilot-timer-button">Autopilot (Timer)</label>
 		
 		<input type="radio" name="operation-mode" value="Autopilot - Counts" onclick ="showContent('auto-counts')">
-		<label for="autopilot-counts-button">Autopilot - Counts</label>
+		<label class = "mode-radio" for="autopilot-counts-button">Autopilot (Counts)</label>
 		
 	</div>
 	
-	<div class = "selectable-mode" id = "manual-mode">
-		<h3> Manual Mode </h3>
-		
-		<div id = "manual-motion">
-			<button class = "generic-button" onclick="triggerPrevious()">PREV</button>
-			<button class = "generic-button" onclick="triggerNext()">NEXT</button>
-			<span>New Position: </span>
-			<input type="text" id="go-to-pos-input" placeholder="1" style="padding: 8px; width: 1rem; margin-right: 8px;" />
-			<button class = "generic-button" onclick="triggerGoToPos()">GO </button>
-			<!-- <p>Response: <span id="new-pos" class="metric">Waiting for PLC response...</span></p> -->
+	<div id = "operation">	
+		<div class = "selectable-mode" id ="manual-mode" style = "grid-column:1;">
+			<div style = "grid-row:1;">
+				<h2> Manual Mode </h2>
+			</div>
+			
+			<div style = "grid-row:2;">
+				<span style="font-weight: bold; font-size: 1.33rem;">Go to New Position: </span>
+				<input type="text" id="go-to-pos-input" placeholder="ex: 1" style="padding: 8px; font-size: 1.33rem; width: 3rem; margin-right: 8px;" />
+				<button class = "generic-button" onclick="triggerGoToPos()">GO </button>
+				
+				<!-- <p>Response: <span id="new-pos" class="metric">Waiting for PLC response...</span></p> -->
+			</div>
+			
+			<div style = "grid-row:3;">
+				<span id = "position-label">Current Position: </span><span id="position-value">--</span>
+				<button class = "generic-button" onclick="triggerPrevious()">PREV</button>
+				<button class = "generic-button" onclick="triggerNext()">NEXT</button>	
+			</div>
+			
+			<div style = "grid-row:4;">
+			<span style="font-weight: bold; font-size: 1.33rem;">Detector Acquisition: </span>
+				<button class = "generic-button" onclick="trigger_MANUAL_START_MCA()">BEGIN</button>
+				<button class = "generic-button" onclick="trigger_MANUAL_STOP_MCA()">END</button>
+			</div>
+			
 		</div>
 		
-		<div id = "manual-acquisition">
-			<span>Genie 2K Gamma Collection</span>
-			<button class = "generic-button" onclick="trigger_MANUAL_START_MCA()">START Acquisition</button>
-			<button class = "generic-button" onclick="trigger_MANUAL_STOP_MCA()">STOP Acquisition</button>
+		<div class = "selectable-mode" id = "auto-timer" style="display: none;">
+			<h2> Autopilot(Timer) </h2>
 		</div>
 		
+		<div class = "selectable-mode" id = "auto-counts" style="display: none;">
+			<h2> Autopilot(Counts) </h2>
+		</div>
+		
+		<div style = "grid-column:2;">
+			<div style="grid-row:1;">
+				<h2> Emergency Motor Stop </h2>
+			</div>
+			
+			<div style = "grid-row:2;">
+				<button id ="emergency-stop" onclick=""> STOP </button>
+				<button id ="emergency-unstop" onclick=""> RESUME </button>
+			</div>
+		</div>
+	
 	</div>
 	
-	<div class = "selectable-mode" id = "auto-timer" style="display: none;">
-		<h3> Autopilot - Timer </h3>
-	</div>
-	
-	<div class = "selectable-mode" id = "auto-counts" style="display: none;">
-		<h3> Autopilot-Counts </h3>
+	<div style ="text-align: center">
+		<h2> TROUBLESHOOTING </h2>
+		
+		<h3> PLC POSITION SENSORS </h3>
+		
+		<div id = "sensor-array"> 
+			<div class="sensor-box"><span class = "sensor-label">B</span><span id="sensorB-value" class="sensor-value">--</span></div>
+			<div class="sensor-box"><span class = "sensor-label">C</span><span id="sensorC-value" class="sensor-value">--</span></div>
+			<div class="sensor-box"><span class = "sensor-label">D</span><span id="sensorD-value" class="sensor-value">--</span></div>
+			<div class="sensor-box"><span class = "sensor-label">E</span><span id="sensorE-value" class="sensor-value">--</span></div>
+			<div class="sensor-box"><span class = "sensor-label">F</span><span id="sensorF-value" class="sensor-value">--</span></div>
+			<div class="sensor-box"><span class = "sensor-label">H</span><span id="sensorH-value" class="sensor-value">--</span></div>
+		</div>
 	</div>
 	
 	<br /> <br /> <br />

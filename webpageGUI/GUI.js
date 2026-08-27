@@ -7,6 +7,10 @@ socket.onmessage = (event) => {
 	// Handle single UI update response from button click
 	if (data.type === 'ui_update') {
 		document.getElementById(data.target_id).innerText = data.text;
+		if ('status_rgb' in data) {
+			let {r, g, b} = data.status_rgb;
+			document.getElementById(data.target_id).style.color = `rgb(${r}, ${g}, ${b})`;
+		}
 	}
 	
 	if (data.type === 'get_values_for_handler') {

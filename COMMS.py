@@ -127,9 +127,26 @@ class PLC():
         port_objects = serial.tools.list_ports.comports()
         com_array = []
         for port_obj in port_objects:
-            com_entry = []
-            com_entry.append(port_obj.device)
-            com_entry.append(port_obj.description)
+            port_vid = port_obj.vid
+            
+            KNOWN_VIDS = {
+                #common manufacturer VIDs for USB-Serial adapters to compare to COM ports found via basic scan
+                0x0403: "FTDI",
+                0x067B: "Prolific", #the USB-serial adapter lying around Pinanski 217 is a bootleg of this manufacturer, but with the correct drivers the VID evaluates to this
+                0x10C4: "Silicon Labs",
+                0x1A86: "QinHeng",
+                0x04B4: "Cypress"
+            }
+            
+            #check to see if the VID of each COM port found matches a known USB-Serial manufacturer VID, and if so, add it to the list of selectable COM ports for the user in the GUI
+            
+            manufacturer = ""
+            if port_vid in KNOWN_VIDS:
+                manufacturer = KNOWN_VIDS.get(port_vid)
+                com_entry = str(port_obj.device) + ", " + manufacturer
+            else:
+                continue
+                
             com_array.append(com_entry)
         
         return com_array
