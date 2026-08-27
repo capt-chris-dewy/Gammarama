@@ -131,11 +131,10 @@
 	<div class = nonsafety-ui> 
 		<div id = communications>
 			<h2> COMMUNICATIONS </h2>
-			<button class ="generic-button" onclick=""> Scan Ports </button>
-			<select id = "port-dropdown"> 
-				<option value = "" disabled selected hidden> Select a Serial Port... </option> 
-			</select>
-			<button class ="generic-button" onclick=""> Connect </button>
+			<button class ="generic-button" onclick="triggerSerialScan()"> Scan Ports </button>
+			<select id = "port-dropdown"> Select Serial Port...<option value = ""> </option> </select>
+			<button class ="generic-button" onclick="triggerSerialConnect()"> Connect </button>
+			<p>Response: <span id="connect-status" class="metric">Waiting for connection status...</span></p>
 		</div>
 		
 		<div id = plc-info>
@@ -176,16 +175,16 @@
 		<h3> Manual Mode </h3>
 		
 		<div id = "manual-motion">
-			<button class = "generic-button" onclick="">PREV</button>
-			<button class = "generic-button" onclick="">NEXT</button>
+			<button class = "generic-button" onclick="triggerPrevious()">PREV</button>
+			<button class = "generic-button" onclick="triggerNext()">NEXT</button>
 			<span>New Position: </span>
 			<input type="text" id="go-to-pos-input" placeholder="1" style="padding: 8px; width: 1rem; margin-right: 8px;" />
-			<button class = "generic-button" onclick="">GO </button>
+			<button class = "generic-button" onclick="triggerGoToPos()">GO </button>
 			<!-- <p>Response: <span id="new-pos" class="metric">Waiting for PLC response...</span></p> -->
 		</div>
 		
 		<div id = "manual-acquisition">
-			<span>Genie 2K Data Collection</span>
+			<span>Genie 2K Gamma Collection</span>
 			<button class = "generic-button" onclick="">START Acquisition</button>
 			<button class = "generic-button" onclick="">STOP Acquisition</button>
 		</div>
