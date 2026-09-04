@@ -40,6 +40,12 @@
 			color: blue;
 		}
 		
+		.generic-input {
+			margin: 0.5rem 0.5rem;
+			font-size: 1.33rem; 
+			width: 3rem; 
+		}
+		
 		/* specific organizational divs / important one-off UI components */
 		
 		#titular {text-align: center;}
@@ -82,13 +88,13 @@
 			color: blue;
 		}
 		
-		#position-label {
+		.position-label {
 			padding: 0.33rem 0.33rem;
 			font-size: 1.33rem;
 			font-weight: bold;
 		}
 		
-		#position-value {
+		.position-value {
 			padding: 0.4rem 0.6rem;
 			font-size: 1.5rem;
 			background-color: white;
@@ -123,10 +129,53 @@
 			color: white;
 		}
 		
-		#manual-mode {
+		#manual-mode{
 			text-align: left;
 			justify-self: center;
 		}
+		
+		#manual-save-location, #timer-save-location, .control-peak-input {
+			margin: 0.5rem 0.5rem;
+			font-size: 1.0rem; 
+			width: 10ch;
+		}
+		
+		#auto-timer {
+			text-align: left;
+			justify-self: center;
+		}
+		
+		#auto-counts {
+			text-align: left;
+			justify-self: center;
+		}
+		
+		.peak-block { display: contents; }
+		
+		.peak-block:not(:first-child) .peak-header {
+			margin-top: 0.75rem;
+			padding-top: 0.75rem;
+			border-top: 1px solid var(--border);
+		}
+		
+		.peak-header {
+			grid-column: 1 / -1;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			font-weight: 600;
+		}
+		
+		.peak-row { display: contents; }
+		
+		.remove-btn {
+			border: none;
+			background: none;
+			color: #b3261e;
+			cursor: pointer;
+			font-size: 0.8rem;
+			padding: 0;
+		  }
 		
     </style>
 </head>
@@ -173,14 +222,14 @@
 			
 			<div style = "grid-row:2;">
 				<span style="font-weight: bold; font-size: 1.33rem;">Go to New Position: </span>
-				<input type="text" id="go-to-pos-input" placeholder="ex: 1" style="padding: 8px; font-size: 1.33rem; width: 3rem; margin-right: 8px;" />
+				<input class ="generic-input" type="text" id="go-to-pos-input" placeholder="ex: 1"/>
 				<button class = "generic-button" onclick="triggerGoToPos()">GO </button>
 				
 				<!-- <p>Response: <span id="new-pos" class="metric">Waiting for PLC response...</span></p> -->
 			</div>
 			
 			<div style = "grid-row:3;">
-				<span id = "position-label">Current Position: </span><span id="position-value">--</span>
+				<span class = "position-label">Current Position: </span><span class="position-value">--</span>
 				<button class = "generic-button" onclick="triggerPrevious()">PREV</button>
 				<button class = "generic-button" onclick="triggerNext()">NEXT</button>	
 			</div>
@@ -191,14 +240,96 @@
 				<button class = "generic-button" onclick="trigger_MANUAL_STOP_MCA()">END</button>
 			</div>
 			
+			<div style = "grid-row:5;">
+				<span>Save Spectrum: </span>
+				<input type="text" id="manual-save-location" value="inaa_data\sample.txt" 
+				oninput="this.style.width = this.value.length + 1 + 'ch'"/>
+				<button class = "generic-button" onclick="triggerManualSave()">SAVE</button>
+			</div>
+			
+			<div style = "grid-row:6;">
+				<p>Note: All files saved to "C:\Users\User\Desktop\(your input)" </p>
+			</div>
+			<div style = "grid-row:7;">
+				<p id = "manual-error">Status: N/A</p>
+			</div>
+			
 		</div>
 		
-		<div class = "selectable-mode" id = "auto-timer" style="display: none;">
-			<h2> Autopilot(Timer) </h2>
+		<div class = "selectable-mode" id = "auto-timer" style = "grid-column:1;">
+			<div style = "grid-row:1;"> 
+				<h2> Autopilot(Timer) </h2>
+			</div>
+			
+			<div style = "grid-row:2;">
+				<span style="font-weight: bold; font-size: 1.33rem;">Start Position: </span>
+				<input class ="generic-input" type="text" id="start-pos-timer" placeholder="ex: 1"/>
+				<span style="font-weight: bold; font-size: 1.33rem;">End Position: </span>
+				<input class ="generic-input" type="text" id="end-pos-timer" placeholder="ex: 6"/>
+			</div>
+			
+			<div style = "grid-row:3;">
+				<span style="font-weight: bold; font-size: 1.33rem;">Hrs: </span>
+				<input class ="generic-input" type="text" id="timer-hrs"/>
+				<span style="font-weight: bold; font-size: 1.33rem;">Min: </span>
+				<input class ="generic-input" type="text" id="timer-mins"/>
+				<span style="font-weight: bold; font-size: 1.33rem;">Sec: </span>
+				<input class ="generic-input" type="text" id="timer-secs"/>
+			</div>
+			
+			<div style = "grid-row:4;">
+				<span class = "position-label">Current Position: </span><span class="position-value">--</span>
+				<button class = "generic-button" onclick="triggerTimerStart()">START PROGRAM</button>
+			</div>
+			
+			<div style = "grid-row:5;">
+				<span>Save Spectra to Directory: </span>
+				<input type="text" id="timer-save-location" value="inaa_data\YourDirectoryName\" 
+				oninput="this.style.width = this.value.length + 1 + 'ch'"/>
+			</div>
+			
+			<div style = "grid-row:6;">
+				<p>Note: All files saved to "C:\Users\User\Desktop\(your input)" </p>
+			</div>
+			<div style = "grid-row:7;">
+				<p id = "timer-error">Status: N/A</p>
+			</div>
+			
 		</div>
 		
 		<div class = "selectable-mode" id = "auto-counts" style="display: none;">
-			<h2> Autopilot(Counts) </h2>
+			<div style = "grid-row:1;"> 
+				<h2> Autopilot(Counts) </h2>
+			</div>
+			
+			<div style = "grid-row:2;">
+				<span style="font-weight: bold; font-size: 1.33rem;">Start Position: </span>
+				<input class ="generic-input" type="text" id="start-pos-counts" placeholder="ex: 1"/>
+				<span style="font-weight: bold; font-size: 1.33rem;">End Position: </span>
+				<input class ="generic-input" type="text" id="end-pos-counts" placeholder="ex: 6"/>
+			</div>
+			
+			<div id = "controlPeakList" style = "grid-row:3;">
+				<button class="generic-button" id="addPeakBtn" type="button" onclick="addPeak()">+ Add Control Peak</button>
+			</div>
+			
+			<div style = "grid-row:4;">
+				<span class = "position-label">Current Position: </span><span class="position-value">--</span>
+				<button class = "generic-button" onclick="triggerCountsStart()">START PROGRAM</button>
+			</div>
+			
+			<div style = "grid-row:5;">
+				<span>Save Spectra to Directory: </span>
+				<input type="text" id="counts-save-location" value="inaa_data\YourDirectoryName\" 
+				oninput="this.style.width = this.value.length + 1 + 'ch'"/>
+			</div>
+			
+			<div style = "grid-row:6;">
+				<p>Note: All files saved to "C:\Users\User\Desktop\(your input)" </p>
+			</div>
+			<div style = "grid-row:7;">
+				<p id = "counts-error">Status: N/A</p>
+			</div>
 		</div>
 		
 		<div style = "grid-column:2;">
